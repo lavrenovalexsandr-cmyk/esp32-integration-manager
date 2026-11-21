@@ -64,6 +64,12 @@ class Esp32OtaSensor(SensorEntity):
             "device_id": self.device_id,
             "device_name": device.get("name"),
             "device_available": device.get("available", False),
+            "device_profile": (
+                device.get("profile", {}).get("product_id")
+                if isinstance(device.get("profile"), dict)
+                else None
+            ),
+            "firmware_version": device.get("sw_version"),
             "progress": device.get("progress"),
             "message": device.get("message"),
         }
