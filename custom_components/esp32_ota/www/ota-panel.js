@@ -276,6 +276,8 @@ class Esp32OtaManagerPanel extends HTMLElement {
         name: this._deviceNames.get(id) || attrs.device_name || attrs.friendly_name || "ESP32",
         status: String(state.state || "unknown"),
         available: attrs.device_available === true,
+        profile: String(attrs.device_profile || "—"),
+        firmwareVersion: String(attrs.firmware_version || "—"),
         progress: Number.isFinite(Number(attrs.progress)) ? Math.max(0, Math.min(100, Number(attrs.progress))) : null,
         message: String(attrs.message || "")
       });
@@ -530,7 +532,9 @@ class Esp32OtaManagerPanel extends HTMLElement {
     message.textContent = selected?.message || "";
     message.hidden = !selected?.message;
     const deviceId = this.querySelector("#device-id");
-    deviceId.textContent = selected ? `ID: ${selected.id}` : "";
+    deviceId.textContent = selected
+      ? `ID: ${selected.id} · Профиль: ${selected.profile} · Прошивка: ${selected.firmwareVersion}`
+      : "";
     deviceId.hidden = !selected;
 
     const updateDisabled = !(selected?.available && !this._busy);
