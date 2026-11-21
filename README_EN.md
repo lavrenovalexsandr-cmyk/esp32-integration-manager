@@ -43,8 +43,6 @@ Rename the gateway through Home Assistant's device page (**Settings → Devices 
 
 **Requirement for the `esp32_ota` implementation:** whenever the integration updates the gateway entry, it must preserve `name_by_user`. Calling `async_get_or_create` with the MQTT name may create/update the device's original identity data, but must not cause the user-assigned name to be lost.
 
-**Migration in this branch:** on the first MQTT message from a gateway, the integration automatically replaces the legacy identifier with the shared one while preserving the existing device entry and its entities. If the shared identifier already belongs to a different HA device entry, the automatic change is skipped and an error is logged; such duplicates must not be merged blindly. Update `esp32_ota` before installing/updating other integrations that use the new namespace. The integration and service domain `esp32_ota` remains unchanged.
-
 Other ESP32 integrations must use the same identifier and obtain identity directly from the shared MQTT contract. They must not import `esp32_ota` code or require it to be installed. Integrations can independently add their entities to the same gateway device.
 ## Device availability
 
@@ -55,7 +53,7 @@ The integration tracks MQTT availability separately through `esp32/<DEVICE_ID>/a
 1. Open **HACS → Integrations**.
 2. Open the menu in the upper-right corner and select **Custom repositories**.
 3. Add this repository:
-   `https://github.com/lavrenovalexsandr-cmyk/esp32-integration-core`
+   `https://github.com/lavrenovalexsandr-cmyk/esp32-integration-manager`
 4. Select **Integration** as the category and confirm.
 5. Find **ESP32 Manager** in HACS and install it.
 6. Restart Home Assistant.
