@@ -12,5 +12,5 @@
   "documentation": "https://github.com/lavrenovalexsandr-cmyk/esp32-integration-manager",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/lavrenovalexsandr-cmyk/esp32-integration-manager/issues",
-  "version": "2.4.0"
+  "version": "3.0.0"
 }
