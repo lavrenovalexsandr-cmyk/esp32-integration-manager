@@ -403,7 +403,7 @@ class Esp32OtaManagerPanel extends HTMLElement {
             <input id="device-name-input" type="text" maxlength="64" placeholder="Имя устройства">
             <label for="device-area-select">Комната</label>
             <select id="device-area-select"><option value="">Не назначена</option></select>
-            <div class="device-modal-actions"><button id="device-modal-save" class="primary">Сохранить</button></div>
+            <div class="device-modal-actions"><button id="device-modal-save" class="primary"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" style="vertical-align:-4px;margin-right:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Сохранить</button></div>
             <div id="device-modal-status" class="message" role="status" aria-live="polite"></div>
           </section>
         </div>
@@ -420,7 +420,7 @@ class Esp32OtaManagerPanel extends HTMLElement {
             <label for="repo-name">Отображаемое имя</label><input id="repo-name" type="text" maxlength="80" placeholder="Например, Xiaomi BLE Gateway">
             <label for="repo-token">GitHub token для этого репозитория (необязательно)</label><input id="repo-token" type="password" autocomplete="new-password" placeholder="Пустое поле — сохранить прежний token">
             <label style="display:flex;align-items:center;gap:8px"><input id="repo-clear-token" type="checkbox" style="width:auto;min-height:0"> Удалить сохранённый token</label>
-            <button id="repo-save" class="primary">Сохранить репозиторий</button>
+            <button id="repo-save" class="primary"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" style="vertical-align:-4px;margin-right:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Сохранить репозиторий</button>
             <div id="catalog-status" class="message" role="status" aria-live="polite"></div>
           </section>
         </div>
