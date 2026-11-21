@@ -34,7 +34,7 @@ identifiers={("esp32", device_id)}
 
 - `esp32` is the platform-wide ESP32 namespace, not an integration-specific domain.
 - `device_id` is the stable gateway ID from MQTT identity.
-- **OTA Manager is responsible for the gateway's initial registration and for the initial user-assigned name** when the device is first discovered in Home Assistant.
+- **ESP32 Manager is responsible for initially registering the physical gateway** when it is first discovered in Home Assistant. The MQTT identity name is the original technical name; Home Assistant's name_by_user remains the user-assigned display name.
 - The user-assigned name is stored in the Home Assistant Device Registry as `name_by_user` and is the single shared display name for the gateway across all ESP32 integrations.
 - The MQTT identity `name` is the device's original technical name and a fallback when `name_by_user` has not been set. It must never overwrite the user-assigned name.
 - Other ESP32 integrations, including Xiaomi Sensor Manager, must read `name_by_user` from the shared Device Registry entry and must not maintain a separate user-assigned gateway name.
@@ -43,9 +43,7 @@ Rename the gateway through Home Assistant's device page (**Settings → Devices 
 
 **Requirement for the `esp32_ota` implementation:** whenever the integration updates the gateway entry, it must preserve `name_by_user`. Calling `async_get_or_create` with the MQTT name may create/update the device's original identity data, but must not cause the user-assigned name to be lost.
 
-**Migration in this branch:** on the first MQTT message from a gateway, the integration automatically replaces the legacy identifier with the shared one while preserving the existing device entry and its entities. If the shared identifier already belongs to a different HA device entry, the automatic change is skipped and an error is logged; such duplicates must not be merged blindly. Update `esp32_ota` before installing/updating other integrations that use the new namespace. The integration and service domain `esp32_ota` remains unchanged.
-
-Other ESP32 integrations must use the same identifier and obtain identity directly from the shared MQTT contract. They must not import `esp32_ota` code or require it to be installed. Integrations can independently add their entities to the same gateway device.
+Specialized ESP32 integrations must declare `esp32_ota` as a required dependency in `manifest.json`. They must not subscribe to shared identity/profile/availability MQTT topics or create their own gateway registry. They obtain snapshots and lifecycle updates through `hass.data["esp32_ota"]["api"]` (API v1): `get_device(device_id)`, `get_devices()`, and `register_remove_handler(domain, async_handler)`. Device events are `esp32_ota_device_added`, `esp32_ota_device_updated`, `esp32_ota_device_removing`, and `esp32_ota_device_removed`. Product integrations may subscribe only to their own product-specific MQTT topics. See [ecosystem architecture](docs/ECOSYSTEM_ARCHITECTURE_RU.md) and [mandatory development rules](docs/DEPENDENT_INTEGRATIONS_RU.md).
 ## Device availability
 
 The integration tracks MQTT availability separately through `esp32/<DEVICE_ID>/availability` (retained `online` / `offline`). OTA status is not used to determine device availability. If the ESP32 disconnects unexpectedly, the broker publishes retained `offline` through the MQTT Last Will configured by the Core `platform_ha` component. The **ESP32 OTA** panel displays “Offline” regardless of the last update result.
@@ -55,7 +53,7 @@ The integration tracks MQTT availability separately through `esp32/<DEVICE_ID>/a
 1. Open **HACS → Integrations**.
 2. Open the menu in the upper-right corner and select **Custom repositories**.
 3. Add this repository:
-   `https://github.com/lavrenovalexsandr-cmyk/esp32-integration-core`
+   `https://github.com/lavrenovalexsandr-cmyk/esp32-integration-manager`
 4. Select **Integration** as the category and confirm.
 5. Find **ESP32 Manager** in HACS and install it.
 6. Restart Home Assistant.
@@ -70,7 +68,7 @@ If you do not use HACS, copy `custom_components/esp32_ota` into `<HA config>/cus
 
 ## Home Assistant control panel
 
-The **ESP32 OTA** panel is shipped with the integration, registered in the Home Assistant sidebar, and restricted to administrators. It combines ESP32 selection, MQTT availability, OTA status and progress, firmware update, GitHub token storage, restart, and factory reset. The panel calls integration services and never publishes MQTT directly. Removing a gateway clears its Device Registry entry and associated entities; a subsequent MQTT identity message from the ESP32 can discover it again.
+The **ESP32 OTA** panel is shipped with the integration, registered in the Home Assistant sidebar, and restricted to administrators. It combines ESP32 selection, MQTT availability, OTA status and progress, firmware update, GitHub token storage, restart, and factory reset. The panel calls integration services and never publishes MQTT directly. Removing a gateway runs the coordinated lifecycle: Factory Reset is sent only while the device is available, dependent integrations clean up their own child devices and data, and Manager clears its shared registry entry and retained messages. An offline device is not queued for a later Factory Reset. A subsequent MQTT identity message can discover it again.
 
 The panel reads `name_by_user` from the shared Device Registry entry identified by `("esp32", device_id)` and falls back to the device's original name when no user-assigned name exists.
 
@@ -84,7 +82,7 @@ The integration provides the following services in the `esp32_ota` domain:
 | `esp32_ota.restart` | `device_id` | Request a normal reboot of the selected ESP32 |
 | `esp32_ota.factory_reset` | `device_id` | Request a factory reset of the selected ESP32 |
 | `esp32_ota.save_token` | `token` | Save the GitHub token |
-| `esp32_ota.remove_device` | `device_id` | Remove the Home Assistant device entry and associated entities while keeping MQTT rediscovery enabled |
+| `esp32_ota.remove_device` | `device_id` | Cascade removal of the ESP32 and dependent integrations' data; no deferred Factory Reset when offline |
 
 For device-control services, `device_id` is the 12-character hexadecimal hardware ID of the ESP32. The device must have been discovered by the integration over MQTT.
 
