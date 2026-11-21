@@ -355,7 +355,7 @@ class Esp32OtaManagerPanel extends HTMLElement {
         </style>
         <div class="content">
           <h1>ESP32 Manager</h1>
-          <p class="intro">Обновление прошивки и управление ESP32-шлюзами.</p>
+          <p class="intro">Центральное управление ESP32-устройствами.</p>
           <section class="card">
             <label for="device">Устройство</label>
             <select id="device"></select>
