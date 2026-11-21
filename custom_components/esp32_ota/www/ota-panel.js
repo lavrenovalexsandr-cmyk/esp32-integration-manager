@@ -333,7 +333,7 @@ class Esp32OtaManagerPanel extends HTMLElement {
           .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
           button.full-width{grid-column:1/-1}
           button{min-height:44px;border:0;border-radius:8px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--esp32-blue);color:white}
-          button.secondary{background:var(--secondary-background-color);color:var(--primary-text-color)}
+          button.secondary{background:var(--esp32-red);color:white}
           button.primary{background:var(--esp32-blue);color:white}
           button.blue{background:var(--esp32-blue);color:white}
           button.green{background:var(--esp32-green);color:white}
